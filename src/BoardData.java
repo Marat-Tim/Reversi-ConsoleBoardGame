@@ -3,14 +3,14 @@ import java.util.Collection;
 import java.util.List;
 
 public class BoardData {
-    private final List<List<Chip>> board;
+    private final List<List<Cell>> board;
 
     public BoardData(int size) {
         board = new ArrayList<>(size);
         for (int x = 0; x < size; ++x) {
             board.add(new ArrayList<>(size));
             for (int y = 0; y < size; ++y) {
-                board.get(x).add(null);
+                board.get(x).add(Cell.EMPTY);
             }
         }
     }
@@ -19,16 +19,32 @@ public class BoardData {
         return board.size();
     }
 
-    public Chip get(int x, int y) {
-        return board.get(x).get(y);
+    public Cell get(int x, int y) {
+        try {
+            return board.get(x).get(y);
+        } catch (IndexOutOfBoundsException ex) {
+            return Cell.EMPTY;
+        }
     }
 
-    public void set(int x, int y, Chip chip) {
-        board.get(x).set(y, chip);
+    public void set(int x, int y, Cell color) {
+        if (color == null) {
+            throw new IllegalArgumentException("Argument color must be non-null");
+        }
+        board.get(x).set(y, color);
     }
 
-    public List<Chip> slice(int x1, int y1, int x2, int y2) {
-        List<Chip> slice = new ArrayList<>();
+    /**
+     * Возвращает коллекцию фишек находящихся либо на одной линии, либо на диагонали.
+     * @param x1 Номер строки первой фишки.
+     * @param y1 Номер столбца первой фишки.
+     * @param x2 Номер строки второй фишки.
+     * @param y2 Номер столбца второй фишки.
+     * @return Срез фишек.
+     * @throws IllegalArgumentException Если нельзя взять срез по таким координатам.
+     */
+    public List<Cell> slice(int x1, int y1, int x2, int y2) {
+        List<Cell> slice = new ArrayList<>();
         int xMin, xMax, yMin, yMax;
         xMin = Math.min(x1, x2);
         xMax = Math.max(x1, x2);
