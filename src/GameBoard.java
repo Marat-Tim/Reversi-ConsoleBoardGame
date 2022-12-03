@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.Optional;
 
 public class GameBoard {
@@ -12,37 +13,60 @@ public class GameBoard {
         return board.size();
     }
 
-    private void checkThatAddIsCorrect(int x, int y, Cell color) {
-        if (color == null) {
-            throw new IllegalArgumentException("Argument color must be non-null");
-        }
-        if (board.get(x, y) != Cell.EMPTY) {
-            throw new CellOccupiedException(
-                    String.format(
-                            "The field cell with coordinates x=%d y=%d is already occupied", x, y));
-        }
-//        Cell otherColor = color == Cell.BLACK ? Cell.RED : Cell.BLACK;
-//        if (Optional.of(board.get(x + 1, y)).orElse(null).getColor() != otherColor &&
-//                Optional.of(board.get(x - 1, y)).orElse(null).getColor() != otherColor &&
-//                Optional.of(board.get(x, y + 1)).orElse(null).getColor() != otherColor &&
-//                Optional.of(board.get(x, y - 1)).orElse(null).getColor() != otherColor) {
-//            throw new NoEnemyChipNearException("There should be an enemy chip next to the cell");
-//        }
+    public void add(int i, int j, Cell color) {
+        board.add(i, j, color);
+        checkThatAddIsCorrect(i, j, color);
+        paintOverCellsAccordingRules(i, j, color);
+    }
+
+    private void paintOverCellsAccordingRules(int i, int j, Cell color) {
+
 
     }
 
-    public void add(int x, int y, Cell color) {
-        checkThatAddIsCorrect(x, y, color);
-        board.set(x, y, color);
+    /**
+     * Закрашивает линию фишек от точки (i, j) до первой точки с фишкой другого цвета на координатах
+     * (i + n * dI, j + n *dJ).
+     * @param i Номер строки начальной точки.
+     * @param j Номер столбца начальной точки.
+     * @param dI В какую сторону идти(по строкам).
+     * @param dJ В какую сторону идти(по столбцам).
+     * @param color
+     * @return
+     */
+    private boolean paintOverCellsOnOneLine(int i, int j, int dI, int dJ, Cell color) {
+        int i1, j1;
+        i1 = i;
+        j1 = j;
+        while (board.get(i1, j1) == color) {
+            i1 += dI;
+            j1 += dJ;
+        }
+        if (board.get(i, j) != Cell.EMPTY) {
+            board.changeColorForSlice(i, j, i1, j1);
+            return true;
+        }
+        return false;
+    }
+
+    private void checkThatAddIsCorrect(int i, int j, Cell color) {
+        Cell otherColor = Cell.otherColor(color);
+        if (board.get(i + 1, j) != otherColor &&
+                board.get(i - 1, j) != otherColor &&
+                board.get(i, j + 1) != otherColor &&
+                board.get(i, j - 1) != otherColor) {
+            throw new NoEnemyChipNearException(
+                    "You can only add a chip to the cell next to the opponent");
+        }
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(size() * (size() + 1));
-        for (int x = 0; x < size(); ++x) {
-            for (int y = 0; y < size(); ++y) {
-                if (board.get(x, y) != null) {
-                    sb.append(board.get(x, y).toString());
+        for (int i = 0; i < size(); ++i) {
+            for (int j = 0; j < size(); ++j) {
+                if (board.get(i, j) != null) {
+                    sb.append(board.get(i, j).toString());
                 } else {
                     sb.append("█");
                 }
