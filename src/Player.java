@@ -1,3 +1,4 @@
 public interface Player {
-    void makeMove(BoardData boardData);
+
+    void makeMove(GameBoard board, Cell color);
 }

@@ -44,12 +44,24 @@ public class BoardData {
      * @param j Номер столбца.
      * @return Ячейка по данным координатам.
      */
-    public Cell get(int i, int j) {
+    public Cell safeGet(int i, int j) {
         try {
             return board.get(i).get(j);
         } catch (IndexOutOfBoundsException ex) {
             return Cell.EMPTY;
         }
+    }
+
+    /**
+     * Возвращает ячейку по данным координатам. При выходе за границу поля выбрасывает исключение.
+     *
+     * @param i Номер строки.
+     * @param j Номер столбца.
+     * @return Ячейка по данным координатам.
+     * @throws IndexOutOfBoundsException Если ячейки по таким координатам не существует.
+     */
+    public Cell get(int i, int j) {
+        return board.get(i).get(j);
     }
 
     /**
@@ -89,11 +101,11 @@ public class BoardData {
      * @throws IllegalArgumentException Если по данным координатам нет фишки.
      */
     public void changeColor(int i, int j) {
-        if (get(i, j) == Cell.EMPTY) {
+        if (safeGet(i, j) == Cell.EMPTY) {
             throw new IllegalArgumentException(String.format(
                     "The field cell with coordinates x=%d j=%d is empty", i, j));
         }
-        set(i, j, Cell.otherColor(get(i, j)));
+        set(i, j, Cell.otherColor(safeGet(i, j)));
     }
 
     /**
@@ -104,7 +116,7 @@ public class BoardData {
      * @return Истина, если клетка пустая, иначе - ложь.
      */
     public boolean isEmptyCell(int i, int j) {
-        return get(i, j) == Cell.EMPTY;
+        return safeGet(i, j) == Cell.EMPTY;
     }
 
     /**

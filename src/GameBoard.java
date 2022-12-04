@@ -31,6 +31,36 @@ public class GameBoard {
     }
 
     /**
+     * Проверяет, можно ли поставить фишку такого цвета на какую-нибудь клетку. Если нет, то игра
+     * закончена.
+     *
+     * @param color Цвет фишки.
+     * @return Истина, если игра закончена, иначе - ложь.
+     */
+    public boolean isEndOfGame(Cell color) {
+        for (int i = 0; i < size(); ++i) {
+            for (int j = 0; j < size(); ++j) {
+                if (canAdd(i, j, color)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Возвращает ячейку на данной позиции.
+     *
+     * @param i Номер строки.
+     * @param j Номер столбца.
+     * @return Ячейка на данной позиции.
+     * @throws IndexOutOfBoundsException Если ячейки с такой позицией не существует.
+     */
+    public Cell get(int i, int j) {
+        return board.get(i, j);
+    }
+
+    /**
      * Добавляет по данным координатам фишку данного цвета.
      *
      * @param i     Номер строки.
@@ -42,6 +72,7 @@ public class GameBoard {
         if (canAdd(i, j, color)) {
             board.add(i, j, color);
             makeClosure(i, j, color);
+            return;
         }
         throw new GameBoardException(
                 "It was not possible to add a chip of this color according to these coordinates");
@@ -56,7 +87,7 @@ public class GameBoard {
      * @return Истина, если можно, иначе - ложь.
      */
     private boolean canAdd(int i, int j, Cell color) {
-        return !board.isEmptyCell(i, j) &&
+        return board.isEmptyCell(i, j) &&
                 areOpponentChipsNearby(i, j, color) &&
                 canMakeClosure(i, j, color);
     }
@@ -73,7 +104,7 @@ public class GameBoard {
         Cell otherColor = Cell.otherColor(color);
         for (int k = -1; k <= 1; ++k) {
             for (int l = -1; l <= 1; ++l) {
-                if (!(k == 0 && j == 0) && board.get(i + k, j + l) == otherColor) {
+                if (!(k == 0 && j == 0) && board.safeGet(i + k, j + l) == otherColor) {
                     return true;
                 }
             }
@@ -136,17 +167,17 @@ public class GameBoard {
      * @return Координаты фишки, если она нашлась, иначе null.
      */
     private Point findChipThatCanMakeClosureOnLine(int i, int j, int dI, int dJ, Cell color) {
-        if (board.get(i, j) == color) {
+        if (board.safeGet(i, j) == color) {
             return null;
         }
         int i1 = i;
         int j1 = j;
         Cell otherColor = Cell.otherColor(color);
-        while (board.get(i1, j1) == otherColor) {
+        while (board.safeGet(i1, j1) == otherColor) {
             i1 += dI;
             j1 += dJ;
         }
-        if (board.get(i1, j1) != Cell.EMPTY) {
+        if (board.safeGet(i1, j1) != Cell.EMPTY) {
             return new Point(i1 - dI, j1 - dJ);
         }
         return null;
@@ -167,7 +198,7 @@ public class GameBoard {
         for (int i = 0; i < size(); ++i) {
             sb.append(i);
             for (int j = 0; j < size(); ++j) {
-                sb.append(board.get(i, j).toString());
+                sb.append(board.safeGet(i, j).toString());
             }
             sb.append('\n');
         }
@@ -189,10 +220,10 @@ public class GameBoard {
         for (int i = 0; i < size(); ++i) {
             sb.append(i);
             for (int j = 0; j < size(); ++j) {
-                if (board.get(i, j) == Cell.EMPTY && canAdd(i, j, color)) {
+                if (board.safeGet(i, j) == Cell.EMPTY && canAdd(i, j, color)) {
                     sb.append("\uD83D\uDFE2");
                 } else {
-                    sb.append(board.get(i, j).toString());
+                    sb.append(board.safeGet(i, j).toString());
                 }
             }
             sb.append('\n');
