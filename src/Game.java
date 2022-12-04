@@ -1,5 +1,5 @@
 public class Game {
-    private static final int BOARD_SIZE = 6;
+    private static final int BOARD_SIZE = 8;
 
     private final Player first, second;
 
@@ -23,7 +23,10 @@ public class Game {
             colorNow = Cell.otherColor(colorNow);
             player = player == first ? second : first;
         } while (!board.isEndOfGame(colorNow));
+        Cell winner = board.whatColorWin();
         System.out.print(board);
-        System.out.printf("Игра окончена. Победил - %s\n", Cell.otherColor(colorNow));
+        System.out.printf(
+                "Игра окончена. Победил - %s\n",
+                winner == null ? "никто, у вас ничья" : winner);
     }
 }

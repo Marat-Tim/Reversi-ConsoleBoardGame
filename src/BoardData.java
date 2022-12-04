@@ -65,17 +65,6 @@ public class BoardData {
     }
 
     /**
-     * Устанавливает в данную ячейку любой цвет.
-     *
-     * @param i     Номер строки.
-     * @param j     Номер столбца.
-     * @param color Тип ячейки, которую нужно вставить.
-     */
-    private void set(int i, int j, Cell color) {
-        board.get(i).set(j, color);
-    }
-
-    /**
      * Добавляет по данным координатам фишку.
      *
      * @param i     Номер строки.
@@ -83,14 +72,14 @@ public class BoardData {
      * @param color Цвет добавляемой фишки(BLACK или RED).
      * @throws IllegalArgumentException Если color = null или color = Cell.EMPTY.
      */
-    public void add(int i, int j, Cell color) {
+    public void set(int i, int j, Cell color) {
         if (color == null) {
             throw new IllegalArgumentException("Argument color must be non-null");
         }
         if (color == Cell.EMPTY) {
             throw new IllegalArgumentException("Argument color must be RED or BLACK, not EMPTY");
         }
-        set(i, j, color);
+        board.get(i).set(j, color);
     }
 
     /**
@@ -129,11 +118,10 @@ public class BoardData {
      * @throws IllegalArgumentException Если нельзя взять срез по таким координатам.
      */
     public void changeColorForSlice(int i1, int j1, int i2, int j2) {
-        int iMin, iMax, jMin, jMax;
-        iMin = Math.min(i1, i2);
-        iMax = Math.max(i1, i2);
-        jMin = Math.min(j1, j2);
-        jMax = Math.max(j1, j2);
+        int iMin = Math.min(i1, i2);
+        int iMax = Math.max(i1, i2);
+        int jMin = Math.min(j1, j2);
+        int jMax = Math.max(j1, j2);
         if (i1 == i2) {
             for (int j = jMin; j <= jMax; ++j) {
                 changeColor(i1, j);

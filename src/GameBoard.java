@@ -15,10 +15,10 @@ public class GameBoard {
      */
     public GameBoard(int size) {
         board = new BoardData(size);
-        board.add(size / 2 - 1, size / 2 - 1, Cell.WHITE);
-        board.add(size / 2, size / 2, Cell.WHITE);
-        board.add(size / 2 - 1, size / 2, Cell.BLACK);
-        board.add(size / 2, size / 2 - 1, Cell.BLACK);
+        board.set(size / 2 - 1, size / 2 - 1, Cell.WHITE);
+        board.set(size / 2, size / 2, Cell.WHITE);
+        board.set(size / 2 - 1, size / 2, Cell.BLACK);
+        board.set(size / 2, size / 2 - 1, Cell.BLACK);
     }
 
     /**
@@ -49,6 +49,33 @@ public class GameBoard {
     }
 
     /**
+     * Возвращает какой цвет сейчас побеждает, то есть каких фишек на поле больше. Если количество
+     * фишек равно, то возвращает null.
+     *
+     * @return Какой цвет сейчас побеждает.
+     */
+    public Cell whatColorWin() {
+        int whiteCount = 0;
+        int blackCount = 0;
+        for (int i = 0; i < size(); ++i) {
+            for (int j = 0; j < size(); ++j) {
+                if (get(i, j) == Cell.BLACK) {
+                    ++blackCount;
+                } else {
+                    ++whiteCount;
+                }
+            }
+        }
+        if (whiteCount == blackCount) {
+            return null;
+        } else if (whiteCount > blackCount) {
+            return Cell.WHITE;
+        } else {
+            return Cell.BLACK;
+        }
+    }
+
+    /**
      * Возвращает ячейку на данной позиции.
      *
      * @param i Номер строки.
@@ -70,12 +97,12 @@ public class GameBoard {
      */
     public void add(int i, int j, Cell color) {
         if (canAdd(i, j, color)) {
-            board.add(i, j, color);
+            board.set(i, j, color);
             makeClosure(i, j, color);
             return;
         }
         throw new GameBoardException(
-                "It was not possible to add a chip of this color according to these coordinates");
+                "It was not possible to set a chip of this color according to these coordinates");
     }
 
     /**
@@ -86,7 +113,7 @@ public class GameBoard {
      * @param color Цвет фишки.
      * @return Истина, если можно, иначе - ложь.
      */
-    private boolean canAdd(int i, int j, Cell color) {
+    public boolean canAdd(int i, int j, Cell color) {
         return board.isEmptyCell(i, j) &&
                 areOpponentChipsNearby(i, j, color) &&
                 canMakeClosure(i, j, color);
@@ -104,7 +131,7 @@ public class GameBoard {
         Cell otherColor = Cell.otherColor(color);
         for (int k = -1; k <= 1; ++k) {
             for (int l = -1; l <= 1; ++l) {
-                if (!(k == 0 && j == 0) && board.safeGet(i + k, j + l) == otherColor) {
+                if (!(k == 0 && l == 0) && board.safeGet(i + k, j + l) == otherColor) {
                     return true;
                 }
             }
@@ -156,7 +183,7 @@ public class GameBoard {
     }
 
     /**
-     * Ищет фишку, которая может сделать замыкание точки (i, j) до первой точки с фишкой другого
+     * Ищет фишку, которая может сделать замыкание от точки (i, j) до первой точки с фишкой другого
      * цвета на координатах (i + n * dI, j + n *dJ).
      *
      * @param i     Номер строки начальной точки.
@@ -181,6 +208,29 @@ public class GameBoard {
             return new Point(i1 - dI, j1 - dJ);
         }
         return null;
+    }
+
+    /**
+     * Проверяет, находится ли клетка в углу поля.
+     * @param i Номер строки.
+     * @param j Номер столбца.
+     * @return Истина, если клетка в углу, иначе - ложь.
+     */
+    public boolean isInTheCorner(int i , int j) {
+        return i == 0 && j == 0 ||
+                i == 0 && j == size() - 1 ||
+                i == size() - 1 && j == 0 ||
+                i == size() - 1 && j == size() - 1;
+    }
+
+    /**
+     * Проверяет, находится ли клетка на краю поля.
+     * @param i Номер строки.
+     * @param j Номер столбца.
+     * @return Истина, если клетка на краю, иначе - ложь.
+     */
+    public boolean isOnEdge(int i, int j) {
+        return i == 0 || i == size() - 1 || j == 0 || j == size() - 1;
     }
 
     /**
@@ -220,7 +270,7 @@ public class GameBoard {
         for (int i = 0; i < size(); ++i) {
             sb.append(i);
             for (int j = 0; j < size(); ++j) {
-                if (board.safeGet(i, j) == Cell.EMPTY && canAdd(i, j, color)) {
+                if (canAdd(i, j, color)) {
                     sb.append("\uD83D\uDFE2");
                 } else {
                     sb.append(board.safeGet(i, j).toString());
