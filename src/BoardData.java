@@ -14,6 +14,7 @@ public class BoardData {
 
     /**
      * Создает поле размера size * size.
+     *
      * @param size Размер поля.
      */
     public BoardData(int size) {
@@ -28,6 +29,7 @@ public class BoardData {
 
     /**
      * Возвращает размер поля(размеры по вертикали и горизонтали одинаковые).
+     *
      * @return Размер поля.
      */
     int size() {
@@ -37,6 +39,7 @@ public class BoardData {
     /**
      * Возвращает ячейку по данным координатам. Если координаты выходят за пределы поля, то возвращает
      * Cell.EMPTY(считается что поле бесконечное).
+     *
      * @param i Номер строки.
      * @param j Номер столбца.
      * @return Ячейка по данным координатам.
@@ -51,8 +54,9 @@ public class BoardData {
 
     /**
      * Устанавливает в данную ячейку любой цвет.
-     * @param i Номер строки.
-     * @param j Номер столбца.
+     *
+     * @param i     Номер строки.
+     * @param j     Номер столбца.
      * @param color Тип ячейки, которую нужно вставить.
      */
     private void set(int i, int j, Cell color) {
@@ -60,12 +64,12 @@ public class BoardData {
     }
 
     /**
-     * Добавляет по данным координатам фишку. Если место уже занято, то выбрасывает исключение.
-     * @param i Номер строки.
-     * @param j Номер столбца.
+     * Добавляет по данным координатам фишку.
+     *
+     * @param i     Номер строки.
+     * @param j     Номер столбца.
      * @param color Цвет добавляемой фишки(BLACK или RED).
      * @throws IllegalArgumentException Если color = null или color = Cell.EMPTY.
-     * @throws CellOccupiedException Если данная клетка уже занята.
      */
     public void add(int i, int j, Cell color) {
         if (color == null) {
@@ -74,29 +78,27 @@ public class BoardData {
         if (color == Cell.EMPTY) {
             throw new IllegalArgumentException("Argument color must be RED or BLACK, not EMPTY");
         }
-        if (!isEmptyCell(i, j)) {
-            throw new CellOccupiedException(String.format(
-                    "The field cell with coordinates i=%d j=%d is already occupied", i, j));
-        }
         set(i, j, color);
     }
 
     /**
      * Меняет цвет фишки по данным координатам. Если там нет фишки, то выбрасывает исключение.
+     *
      * @param i Номер строки.
      * @param j Номер столбца.
-     * @throws CellOccupiedException Если по данным координатам нет фишки.
+     * @throws IllegalArgumentException Если по данным координатам нет фишки.
      */
     public void changeColor(int i, int j) {
         if (get(i, j) == Cell.EMPTY) {
-            throw new CellOccupiedException(String.format(
-                    "The field cell with coordinates x=%d j=%d is already occupied", i, j));
+            throw new IllegalArgumentException(String.format(
+                    "The field cell with coordinates x=%d j=%d is empty", i, j));
         }
         set(i, j, Cell.otherColor(get(i, j)));
     }
 
     /**
      * Проверят пустая ли клетка поля по данным координатам.
+     *
      * @param i Номер строки.
      * @param j Номер столбца.
      * @return Истина, если клетка пустая, иначе - ложь.
@@ -107,6 +109,7 @@ public class BoardData {
 
     /**
      * Перекрашивает срез фишек находящихся либо на одной линии, либо на диагонали между двумя точками.
+     *
      * @param i1 Номер строки первой фишки.
      * @param j1 Номер столбца первой фишки.
      * @param i2 Номер строки второй фишки.
