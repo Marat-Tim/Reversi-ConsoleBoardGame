@@ -30,6 +30,18 @@ public class GameBoard {
         return board.size();
     }
 
+    public int getChipCount(Cell color) {
+        int count = 0;
+        for (int i = 0; i < size(); ++i) {
+            for (int j = 0; j < size(); ++j) {
+                if (get(i, j) == color) {
+                    ++count;
+                }
+            }
+        }
+        return count;
+    }
+
     /**
      * Проверяет, можно ли поставить фишку такого цвета на какую-нибудь клетку. Если нет, то игра
      * закончена.
@@ -61,7 +73,7 @@ public class GameBoard {
             for (int j = 0; j < size(); ++j) {
                 if (get(i, j) == Cell.BLACK) {
                     ++blackCount;
-                } else {
+                } else if (get(i, j) == Cell.WHITE) {
                     ++whiteCount;
                 }
             }
@@ -85,6 +97,18 @@ public class GameBoard {
      */
     public Cell get(int i, int j) {
         return board.get(i, j);
+    }
+
+    /**
+     * Возвращает ячейку по данным координатам. Если координаты выходят за пределы поля, то возвращает
+     * Cell.EMPTY(считается что поле бесконечное).
+     *
+     * @param i Номер строки.
+     * @param j Номер столбца.
+     * @return Ячейка по данным координатам.
+     */
+    public Cell safeGet(int i, int j) {
+        return board.safeGet(i, j);
     }
 
     /**
@@ -193,7 +217,7 @@ public class GameBoard {
      * @param color Какой цвет поставили только что.
      * @return Координаты фишки, если она нашлась, иначе null.
      */
-    private Point findChipThatCanMakeClosureOnLine(int i, int j, int dI, int dJ, Cell color) {
+    public Point findChipThatCanMakeClosureOnLine(int i, int j, int dI, int dJ, Cell color) {
         if (board.safeGet(i, j) == color) {
             return null;
         }
@@ -241,7 +265,6 @@ public class GameBoard {
      */
     @Override
     public String toString() {
-        //TODO посчитай размер
         //TODO полностью переделай
         StringBuilder sb = new StringBuilder();
         sb.append("  0 1 2 3  4 5 6 7\n");
@@ -263,7 +286,6 @@ public class GameBoard {
      * @return Красивое текстовое представление поля.
      */
     public String toString(Cell color) {
-        //TODO посчитай размер
         //TODO полностью переделай
         StringBuilder sb = new StringBuilder();
         sb.append("  0 1 2 3  4 5 6 7\n");
@@ -271,7 +293,7 @@ public class GameBoard {
             sb.append(i);
             for (int j = 0; j < size(); ++j) {
                 if (canAdd(i, j, color)) {
-                    sb.append("\uD83D\uDFE2");
+                    sb.append(Constants.BOARD_HINT);
                 } else {
                     sb.append(board.safeGet(i, j).toString());
                 }

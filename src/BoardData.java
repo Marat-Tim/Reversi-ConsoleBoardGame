@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class BoardData {
     /**
      * Двумерный массив в котором хранится поле игры.
      */
-    private final List<List<Cell>> board;
+    private final ArrayList<ArrayList<Cell>> board;
 
     /**
      * Создает поле размера size * size.
@@ -90,7 +91,7 @@ public class BoardData {
      * @throws IllegalArgumentException Если по данным координатам нет фишки.
      */
     public void changeColor(int i, int j) {
-        if (safeGet(i, j) == Cell.EMPTY) {
+        if (get(i, j) == Cell.EMPTY) {
             throw new IllegalArgumentException(String.format(
                     "The field cell with coordinates x=%d j=%d is empty", i, j));
         }
@@ -135,7 +136,9 @@ public class BoardData {
             return;
         }
         if (Math.abs(j1 - j2) == Math.abs(i1 - i2)) {
-            for (int i = iMin, j = jMin; i <= iMax && j <= jMax; ++i, ++j) {
+            int dI = i2 > i1 ? +1 : -1;
+            int dJ = j2 > j1 ? +1 : -1;
+            for (int i = i1, j = j1; i != i2 + dI && j != j2 + dJ; i += dI, j += dJ) {
                 changeColor(i, j);
             }
             return;

@@ -11,11 +11,11 @@ public enum Cell {
     @Override
     public String toString() {
         if (this == WHITE) {
-            return "\uD83D\uDD34";
+            return Constants.WHITE_CELL;
         }
         if (this == BLACK) {
-            return "⚫";
+            return Constants.BLACK_CELL;
         }
-        return "⚪";
+        return Constants.EMPTY_CELL;
     }
 }
